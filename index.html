@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050d14" id="tc">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Farm Jarvis">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>Farm J.A.R.V.I.S.</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="jarvis"]{--bg:#050d14;--pn:#0b1c29;--ink:#d7f3ff;--mu:#7aa0b3;--ac:#2fd8ff;--a2:#ffb830;--rd:#ff6a5a;--gr:#4fe39a;--ln:#164a63;--ai:#04202c}
+[data-theme="forest"]{--bg:#07140d;--pn:#0e2217;--ink:#e2f5e6;--mu:#86ab92;--ac:#4fe39a;--a2:#e8c34a;--rd:#ff7a63;--gr:#7fe08a;--ln:#1f4a30;--ai:#05200f}
+[data-theme="harvest"]{--bg:#17110a;--pn:#231a0f;--ink:#f6ead2;--mu:#b49a76;--ac:#ffb830;--a2:#ff8a4c;--rd:#ff6f5e;--gr:#9fdc6a;--ln:#4a3817;--ai:#241600}
+[data-theme="daylight"]{--bg:#eef3f1;--pn:#fff;--ink:#12261f;--mu:#4f665c;--ac:#0b7a55;--a2:#b36b00;--rd:#b3392b;--gr:#0b7a55;--ln:#c5d6cd;--ai:#fff}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Chakra Petch",system-ui,sans-serif;min-height:100vh;background-image:radial-gradient(circle at 50% -10%,color-mix(in srgb,var(--ac) 16%,transparent),transparent 55%);background-attachment:fixed}
+.wrap{max-width:600px;margin:0 auto;padding:14px 14px 96px}
+.hidden{display:none!important}
+.orb{width:44px;height:44px;position:relative;flex:none}.orb.lg{width:84px;height:84px}
+.orb i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--ac);border-top-color:transparent;border-bottom-color:transparent;animation:sp 6s linear infinite}
+.orb i:nth-child(2){inset:18%;border-color:var(--a2) transparent;animation-duration:4s;animation-direction:reverse}
+.orb b{position:absolute;inset:36%;border-radius:50%;background:var(--ac);box-shadow:0 0 16px var(--ac);animation:pu 2.4s ease-in-out infinite}
+.orb.think b{animation-duration:.6s;background:var(--a2);box-shadow:0 0 18px var(--a2)}
+@keyframes sp{to{transform:rotate(360deg)}}@keyframes pu{50%{transform:scale(.6);opacity:.6}}
+@media (prefers-reduced-motion:reduce){.orb i,.orb b{animation:none}}
+h1{font-size:19px;letter-spacing:.05em;margin:0}h2{font-size:15px;margin:0 0 8px;color:var(--ac);letter-spacing:.04em}
+.mu{color:var(--mu);font-size:13px}
+.bar{display:flex;align-items:center;gap:10px;padding:6px 0 12px;border-bottom:1px solid var(--ln);margin-bottom:12px}
+.bar .w{flex:1;min-width:0}
+.bx{background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:14px;margin:0 0 12px;position:relative}
+.bx:before{content:"";position:absolute;left:-1px;top:-1px;width:14px;height:14px;border-left:2px solid var(--ac);border-top:2px solid var(--ac);border-radius:6px 0 0 0}
+form{display:grid;gap:10px}
+label{font-size:13px;color:var(--mu);display:grid;gap:4px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--ln);border-radius:4px;padding:10px;min-height:44px;width:100%}
+button{font:inherit;font-weight:600;background:transparent;color:var(--ac);border:1px solid var(--ac);border-radius:4px;padding:10px 14px;min-height:44px;cursor:pointer}
+button:hover{background:color-mix(in srgb,var(--ac) 14%,transparent)}
+button.go{background:var(--ac);color:var(--ai)}
+button.sm{min-height:36px;padding:4px 10px;font-size:14px}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--a2);outline-offset:2px}
+.err{color:var(--rd);font-size:14px;min-height:20px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--ln)}
+.row:first-child{border-top:0}
+.p{color:var(--gr);font-weight:600}.n{color:var(--rd);font-weight:600}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kp div{background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:10px}.kp b{display:block;font-size:18px}.kp span{font-size:12px;color:var(--mu)}
+.greet{font-size:16px;font-weight:600}
+#log{display:grid;gap:8px;max-height:42vh;overflow-y:auto}
+.m{padding:10px 12px;border-radius:6px;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere}
+.m.j{background:color-mix(in srgb,var(--ac) 12%,transparent);border-left:3px solid var(--ac)}
+.m.u{background:color-mix(in srgb,var(--a2) 14%,transparent);border-right:3px solid var(--a2);justify-self:end}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.chips button{font-size:13px;min-height:36px;padding:6px 10px}
+.ask{display:grid;grid-template-columns:1fr auto auto;gap:6px}
+a.lnk{display:block;color:var(--ac);border:1px solid var(--ln);background:var(--pn);border-radius:6px;padding:12px;text-decoration:none;font-weight:600;margin-bottom:8px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--pn);border-top:1px solid var(--ln);display:grid;grid-template-columns:repeat(7,1fr);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{border:0;border-top:3px solid transparent;border-radius:0;color:var(--mu);font-size:11px;padding:8px 2px;min-height:52px;line-height:1.15}
+nav button.on{color:var(--ac);border-top-color:var(--ac);background:transparent}
+.sw{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:8px 0}
+.sw button{aspect-ratio:1;min-height:44px;padding:0;border:2px solid var(--ln);border-radius:8px}
+.sw button.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--ac)}
+.ph{height:22px;border-radius:11px;background:linear-gradient(90deg,#e0412f,#f08a2c,#f2d23a,#6cc24a,#2fa7a0,#3a5fc8);margin:10px 0 4px}
+input[type=range]{padding:0;min-height:30px;accent-color:var(--ac)}
+.th{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.th button{display:grid;gap:6px;justify-items:center;font-size:12px;color:var(--ink);border-color:var(--ln)}
+.th button.on{border-color:var(--ac)}.th i{width:26px;height:26px;border-radius:50%;border:2px solid var(--ln)}
+.ft{text-align:center;color:var(--mu);font-size:12px;padding:10px 0}
+.low{border-left:3px solid var(--rd);padding-left:8px}
+.done span.t{text-decoration:line-through;color:var(--mu)}
+.q{font-size:15px;font-style:italic}
+.th.lgs{grid-template-columns:repeat(3,1fr)}
+.th.lgs button{padding:8px;font-size:14px}
+@media print{body *{visibility:hidden}#p-money,#p-money *{visibility:visible}#p-money{position:absolute;left:0;top:0;width:100%}#p-money .bx:nth-child(2){display:none}body{background:#fff}.bx{background:#fff!important;color:#000!important;border-color:#999!important}*{color:#000!important}}
+</style>
+</head>
+<body data-theme="jarvis">
+<div class="wrap">
+
+<section id="auth">
+  <div style="display:grid;justify-items:center;gap:8px;text-align:center;margin:18px 0"><div class="orb lg"><i></i><i></i><b></b></div><h1>FARM J.A.R.V.I.S.</h1><div class="mu">Your smart farm assistant. Please identify yourself.</div></div>
+  <div class="th lgs" style="margin-bottom:12px"></div>
+  <div class="bx"><form id="fAuth">
+    <label id="nameW" class="hidden">Your name<input id="fullname" autocomplete="name" placeholder="e.g. Tendai Moyo"></label>
+    <label>Username<input id="user" autocomplete="username" autocapitalize="none" required></label>
+    <label>Password<input id="pass" type="password" autocomplete="current-password" minlength="4" required></label>
+    <div class="err" id="err" role="alert"></div>
+    <button class="go" id="go">Log in</button><button type="button" id="swap">New farmer? Create account</button>
+  </form></div>
+  <p class="mu">Accounts are saved on this device only. Do not reuse an important password.</p>
+</section>
+
+<section id="hud" class="hidden">
+  <div class="bar"><div class="orb" id="orb"><i></i><i></i><b></b></div><div class="w"><h1>J.A.R.V.I.S.</h1><div class="mu" id="who"></div></div><span class="mu" id="net" style="font-size:12px"></span><button class="sm" id="out">Log out</button></div>
+
+  <div id="p-ask">
+    <div class="bx"><div class="greet" id="greet" aria-live="polite"></div></div>
+    <div class="kp"><div><b id="k1">$0</b><span>Profit</span></div><div><b id="k2">0</b><span>Low stock</span></div><div><b id="k3">0</b><span>Tasks due</span></div></div>
+    <div class="bx"><h2>Thought for today</h2><div class="q" id="quote"></div></div>
+    <div class="bx"><div id="log" aria-live="polite"></div></div>
+    <div class="chips" id="qs"></div>
+    <div style="margin:0 0 10px"><button type="button" class="sm" id="lis">Listen again</button></div>
+    <form class="ask" id="fAsk"><input id="q" placeholder="Ask about crops, pests, feed, soil..." aria-label="Your question" autocomplete="off"><button class="go">Send</button><button type="button" id="mic" aria-label="Speak your question">Mic</button></form>
+  </div>
+
+  <div id="p-weather" class="hidden">
+    <div class="bx"><h2>Weather forecast</h2><form id="fWx"><label>Town or village<input id="wxQ" placeholder="e.g. Chinhoyi" autocomplete="off"></label><button class="go">Check weather</button><button type="button" id="wxGeo">Use my location</button></form></div>
+    <div id="wxOut"></div>
+  </div>
+
+  <div id="p-money" class="hidden">
+    <div class="bx" id="msum"></div>
+    <div class="bx"><h2>Record sale or expense</h2><form id="fTx"><div class="two"><label>Type<select id="txT"><option value="sale">Sale</option><option value="expense">Expense</option></select></label><label>Amount ($)<input id="txA" type="number" step="0.01" min="0" required inputmode="decimal"></label></div><div class="two"><label>Crop / product<input id="txC" list="cl" required placeholder="e.g. Maize"></label><label>Note<input id="txN" placeholder="e.g. 20 bags"></label></div><datalist id="cl"></datalist><button class="go">Save entry</button></form></div>
+    <div class="bx" id="mlist"></div>
+  </div>
+
+  <div id="p-stock" class="hidden">
+    <div class="bx"><h2>Add stock item</h2><form id="fSt"><label>Item<input id="stN" required placeholder="e.g. Layers mash"></label><div class="two"><label>Category<select id="stC"><option>Feed</option><option>Seed</option><option>Fertilizer</option><option>Chemicals</option><option>Produce</option><option>Livestock</option><option>Tools</option></select></label><label>Unit<input id="stU" required placeholder="bags, kg, birds"></label></div><div class="two"><label>Quantity now<input id="stQ" type="number" min="0" step="any" required></label><label>Warn me at or below<input id="stL" type="number" min="0" step="any" value="0"></label></div><button class="go">Add to stock</button></form></div>
+    <div class="bx" id="slist"></div>
+  </div>
+
+  <div id="p-soil" class="hidden">
+    <div class="bx"><h2>Soil colour guide</h2><div class="mu">Tap a colour that looks like your soil.</div><div class="sw" id="sw"></div><div id="sd"></div></div>
+    <div class="bx"><h2>pH scale</h2><div class="mu">Move the slider to your test result.</div><div class="ph"></div><input type="range" id="phr" min="4" max="9" step="0.1" value="6.5" aria-label="Soil pH"><div id="phd"></div></div>
+    <div class="bx"><h2>Soil type: feel test</h2><div class="row"><span><b>Sandy</b><br><span class="mu">Gritty, will not hold a shape. Drains fast, needs manure and mulch.</span></span></div><div class="row"><span><b>Loam</b><br><span class="mu">Crumbly, holds shape then breaks. Best all-round soil.</span></span></div><div class="row"><span><b>Clay</b><br><span class="mu">Sticky, rolls into a long ribbon. Holds water, needs drainage and organic matter.</span></span></div><p class="mu">Wet a handful and squeeze. Colour is only a clue. Confirm pH with a test kit or lab.</p></div>
+  </div>
+
+  <div id="p-tasks" class="hidden">
+    <div class="bx"><h2>New reminder</h2><form id="fTk"><label>Task<input id="tkT" required placeholder="e.g. Spray maize"></label><label>Due date<input id="tkD" type="date" required></label><button class="go">Add reminder</button></form></div>
+    <div class="bx" id="tlist"></div>
+  </div>
+
+  <div id="p-more" class="hidden">
+    <div class="bx"><h2>Language</h2><div class="th lgs"></div></div>
+    <div class="bx"><h2>Search the web</h2><form id="fSe"><input id="sq" placeholder="e.g. maize fall armyworm control" required aria-label="Search topic"><button class="go">Find information</button><button type="button" id="askJ">Ask Jarvis</button></form><div id="srcs" style="margin-top:10px"></div></div>
+    <div class="bx"><h2>Farm profile for Jarvis</h2><form id="fPf"><label>Where is your farm?<input id="pfL" placeholder="District and country"></label><div class="two"><label>Farm type<select id="pfT"><option value="">Choose</option><option>Crops</option><option>Livestock</option><option>Poultry</option><option>Mixed</option></select></label><label>Farm size<input id="pfS" placeholder="e.g. 3 hectares"></label></div><label>Main crops or animals<input id="pfM" placeholder="e.g. maize, broilers"></label><button class="go">Save profile</button><div class="mu" id="pfOk" role="status"></div></form></div>
+    <div class="bx"><h2>Colour theme</h2><div class="th" id="th"></div></div>
+    <div class="bx"><h2>Install on your phone</h2><div class="mu" id="ins">Android Chrome: open the menu and tap Add to Home screen. iPhone Safari: tap Share, then Add to Home Screen. </div><button class="go hidden" id="instBtn" style="margin-top:10px">Install app</button></div>
+    <div class="bx"><h2>Your data</h2><div class="two"><button id="bkE">Export backup</button><button id="bkI">Import backup</button></div><input type="file" id="bkF" accept=".json,application/json" class="hidden"><button id="pr" style="margin-top:8px;width:100%">Print report</button><div class="mu" id="bkMsg" role="status"></div></div>
+    <div class="bx"><h2>About</h2><div class="mu">Farm J.A.R.V.I.S. v1.0. Developed by Junior Keche to help farmers keep records, track stock, plan around the weather and get answers in English, Shona and Ndebele.</div></div>
+    <div class="bx"><div class="two"><button id="voice" aria-pressed="true">Voice: on</button><button id="vtest" type="button">Test voice</button></div><div class="mu" id="vst" role="status" style="margin-top:8px"></div></div>
+  </div>
+</section>
+<div class="ft">&copy; <span class="yr"></span> Junior Keche. All rights reserved.</div>
+</div>
+<nav id="nav" class="hidden"></nav>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function money(n){return (n<0?"-":"")+"$"+(Math.round(Math.abs(n)*100)/100).toLocaleString()}
+function today(){return new Date().toISOString().slice(0,10)}
+document.querySelectorAll(".yr").forEach(function(e){e.textContent=new Date().getFullYear()});
+var users={};try{users=JSON.parse(ls("jv:users")||"{}")}catch(e){}
+var me=null,D={tx:[],st:[],tk:[]},reg=false,voiceOn=true,hist=[],sample=null,busy=false,tab="ask",dp=null;
+function save(){ls("jv:data:"+me,JSON.stringify(D))}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+
+/* themes */
+var TH=[["jarvis","Jarvis","#2fd8ff","#050d14"],["forest","Forest","#4fe39a","#07140d"],["harvest","Harvest","#ffb830","#17110a"],["daylight","Daylight","#0b7a55","#eef3f1"]];
+function setTheme(t){document.body.setAttribute("data-theme",t);ls("jv:theme",t);var f=TH.find(function(x){return x[0]===t})||TH[0];$("tc").content=f[3];
+  $("th").innerHTML=TH.map(function(x){return '<button data-a="th" data-v="'+x[0]+'" class="'+(x[0]===t?'on':'')+'" aria-pressed="'+(x[0]===t)+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>'}).join("")}
+setTheme(ls("jv:theme")||"jarvis");
+
+/* quotes */
+var QS=["Every seed you plant today is a promise to tomorrow.","Good records turn hard work into real profit.","Healthy soil grows healthy farmers.","Small steps every day grow big harvests.","Rain may be late, but patience still harvests.","A farmer who plans never plants in the dark.","Count what you grow, sell and spend. Your farm is a business.","Dry seasons end. Keep your soil ready.","Feed the soil and the soil will feed you.","Stand tall: the world eats because you work.","Progress comes one row at a time.","Learn something new about your land every week.","Strong roots survive the storm.","An early start today is a full barn tomorrow."];
+$("quote").textContent="\u201C"+QS[Math.floor(Date.now()/864e5)%QS.length]+"\u201D";
+
+/* auth */
+async function hash(s){try{var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("jv|"+s));return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("")}catch(e){return "p:"+btoa(unescape(encodeURIComponent(s)))}}
+$("swap").onclick=function(){reg=!reg;$("nameW").classList.toggle("hidden",!reg);$("fullname").required=reg;$("go").textContent=reg?"Create account":"Log in";$("swap").textContent=reg?"Have an account? Log in":"New farmer? Create account";$("err").textContent="";applyLang()};
+$("fAuth").onsubmit=async function(e){e.preventDefault();var u=$("user").value.trim().toLowerCase(),h=await hash($("pass").value);
+  if(reg){if(users[u]){$("err").textContent="That username is taken. Try another.";return}users[u]={name:$("fullname").value.trim(),h:h};ls("jv:users",JSON.stringify(users))}
+  else if(!users[u]||users[u].h!==h){$("err").textContent="Username or password is wrong. Check and try again.";return}
+  ls("jv:session",u);enter(u)};
+function first(){return (users[me].name||me).split(" ")[0]}
+function typeInto(el,t){el.textContent="";var i=0;(function n(){if(i<=t.length){el.textContent=t.slice(0,i++);setTimeout(n,20)}})()}
+var VO=[],lastSpoken="";
+function loadV(){try{VO=speechSynthesis.getVoices()||[]}catch(e){}}
+if(window.speechSynthesis){loadV();try{speechSynthesis.onvoiceschanged=loadV}catch(e){}}
+function pickV(){var l=lang;return VO.find(function(v){return v.lang&&v.lang.toLowerCase().indexOf(l)===0})||VO.find(function(v){return /^en[-_](za|zw|gb)/i.test(v.lang||"")})||VO.find(function(v){return /^en/i.test(v.lang||"")})||VO[0]||null}
+function speak(t,force){if(!t||(!voiceOn&&!force)||!window.speechSynthesis)return;lastSpoken=t;
+  try{loadV();speechSynthesis.cancel();speechSynthesis.resume();var v=pickV(),parts=(t.match(/[^.!?\n]+[.!?]*/g)||[t]).slice(0,14);
+    parts.forEach(function(p){p=p.trim();if(!p)return;var u=new SpeechSynthesisUtterance(p);if(v){u.voice=v;u.lang=v.lang}else{u.lang="en-US"}u.rate=.95;speechSynthesis.speak(u)})}catch(e){}}
+var unlocked=false;document.addEventListener("pointerdown",function(){if(unlocked||!window.speechSynthesis)return;unlocked=true;try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}},{once:true});
+$("lis").onclick=function(){speak(lastSpoken||$("greet").textContent,true)};
+$("vtest").onclick=function(){if(!window.speechSynthesis){$("vst").textContent="This browser has no voice engine. Open the app in Chrome or Safari.";return}
+  loadV();speak("Hello, I am Jarvis, your farm assistant.",true);$("vst").textContent=VO.length?"Playing. If you hear nothing, raise the volume and turn off silent mode.":"No voices were found on this device. Install a text-to-speech voice in the phone settings.";
+  setTimeout(function(){if(!speechSynthesis.speaking&&!speechSynthesis.pending)$("vst").textContent="The voice was blocked here. Open the hosted app in Chrome or Safari and tap Test voice again."},900)};
+
+function alerts(){var lo=D.st.filter(function(s){return s.q<=s.l}).length;return{lo:lo,due:D.tk.filter(function(k){return !k.done&&k.d<=today()}).length}}
+function enter(u){me=u;try{var d=JSON.parse(ls("jv:data:"+u)||"{}");D={tx:d.tx||[],st:d.st||[],tk:d.tk||[]}}catch(e){D={tx:[],st:[],tk:[]}}
+  D.pf=D.pf||{};$("pfL").value=D.pf.loc||"";$("pfT").value=D.pf.type||"";$("pfM").value=D.pf.main||"";$("pfS").value=D.pf.size||"";$("pfOk").textContent="";$("auth").classList.add("hidden");$("hud").classList.remove("hidden");$("nav").classList.remove("hidden");$("fAuth").reset();$("who").textContent=users[u].name||u;
+  var msg=greetMsg();
+  typeInto($("greet"),msg);speak(msg);$("log").innerHTML="";hist=[];
+  addMsg("j",intro());
+  $("qs").innerHTML=CH[lang].map(function(x){return '<button data-a="q" data-v="'+esc(x)+'">'+esc(x)+'</button>'}).join("");
+  go("ask");renderAll();initAI();setLang(lang);net();wxBoot()}
+
+/* tabs */
+var T=[["ask","Jarvis"],["weather","Weather"],["money","Money"],["stock","Stock"],["soil","Soil"],["tasks","Tasks"],["more","More"]];
+function go(t){tab=t;T.forEach(function(x){$("p-"+x[0]).classList.toggle("hidden",x[0]!==t)});$("nav").innerHTML=T.map(function(x){return '<button data-a="tab" data-v="'+x[0]+'" class="'+(x[0]===t?'on':'')+'">'+x[1]+'</button>'}).join("");window.scrollTo(0,0);applyLang();if(t==="weather")wxOpen()}
+
+/* renders */
+function renderAll(){rMoney();rStock();rTasks();var I=0,X=0;D.tx.forEach(function(t){t.t==="sale"?I+=t.a:X+=t.a});var a=alerts();$("k1").textContent=money(I-X);$("k2").textContent=a.lo;$("k3").textContent=a.due;applyLang()}
+function rMoney(){var m={},I=0,X=0;D.tx.forEach(function(t){var c=m[t.c]=m[t.c]||{i:0,x:0};if(t.t==="sale"){c.i+=t.a;I+=t.a}else{c.x+=t.a;X+=t.a}});
+  $("cl").innerHTML=Object.keys(m).map(function(c){return '<option value="'+esc(c)+'">'}).join("");
+  $("msum").innerHTML='<div class="row"><b>Total profit</b><span class="'+(I-X>=0?'p':'n')+'">'+money(I-X)+'</span></div><div class="mu">Sales '+money(I)+' · Expenses '+money(X)+'</div>'+Object.keys(m).map(function(c){var p=m[c].i-m[c].x;return '<div class="row"><span>'+esc(c)+'</span><span class="'+(p>=0?'p':'n')+'">'+money(p)+'</span></div>'}).join("");
+  $("mlist").innerHTML='<h2>Recent entries</h2>'+(D.tx.length?D.tx.slice(-15).reverse().map(function(t){return '<div class="row"><span>'+esc(t.c)+(t.n?' · '+esc(t.n):'')+'<br><span class="mu">'+t.d+'</span></span><span><span class="'+(t.t==="sale"?'p':'n')+'">'+(t.t==="sale"?'+':'-')+money(t.a)+'</span> <button class="sm" data-a="xd" data-v="'+t.id+'" aria-label="Delete entry">x</button></span></div>'}).join(""):'<div class="mu">No entries yet. Record your first sale or expense above.</div>')}
+function rStock(){$("slist").innerHTML='<h2>Stock on hand</h2>'+(D.st.length?D.st.map(function(s){var lo=s.q<=s.l;return '<div class="row'+(lo?' low':'')+'"><span><b>'+esc(s.n)+'</b><br><span class="mu">'+esc(s.c)+(lo?' · <span class="n">Low stock</span>':'')+'</span></span><span style="display:flex;gap:4px;align-items:center"><button class="sm" data-a="sm" data-v="'+s.id+'" aria-label="Reduce">-</button><input type="number" step="any" min="0" value="'+s.q+'" data-qty="'+s.id+'" style="width:72px;min-height:36px;text-align:center" aria-label="Quantity"><span class="mu">'+esc(s.u)+'</span><button class="sm" data-a="sp" data-v="'+s.id+'" aria-label="Increase">+</button><button class="sm" data-a="sd" data-v="'+s.id+'" aria-label="Delete item">x</button></span></div>'}).join(""):'<div class="mu">No stock yet. Add feed, seed, fertilizer or produce above.</div>')}
+function rTasks(){var l=D.tk.slice().sort(function(a,b){return (a.done-b.done)||(a.d<b.d?-1:1)});$("tlist").innerHTML='<h2>Reminders</h2>'+(l.length?l.map(function(k){return '<div class="row'+(k.done?' done':'')+'"><label style="display:flex;gap:10px;align-items:center;color:inherit;font-size:16px"><input type="checkbox" style="width:22px;min-height:22px" data-tg="'+k.id+'" '+(k.done?'checked':'')+'><span class="t">'+esc(k.t)+'</span></label><span style="display:flex;gap:6px;align-items:center"><span class="'+(!k.done&&k.d<=today()?'n':'mu')+'">'+k.d+'</span><button class="sm" data-a="kd" data-v="'+k.id+'" aria-label="Delete reminder">x</button></span></div>'}).join(""):'<div class="mu">No reminders yet.</div>')}
+
+/* soil */
+var SC=[["#1f1a17","Black or very dark","Rich in organic matter. Usually fertile and holds water well. Often loam or clay. pH often 6 to 7.5."],["#5a3d2b","Dark brown","Good organic matter and drainage. Fertile loam, suits most crops. pH often 5.5 to 7."],["#a8643a","Red or reddish brown","Iron-rich and well drained, often acidic and low in nutrients. Add lime and manure. pH often 4.5 to 6."],["#d8b04a","Yellow","Leached or low in organic matter. Usually acidic and low in fertility. pH often 4.5 to 6."],["#9a9a94","Grey or blue-grey","Waterlogged or poorly drained. Needs drains or raised beds. pH varies."],["#e9e4d8","Pale or white patches","Low organic matter, or salts and lime in dry areas. Often alkaline, pH 7.5 to 9."]];
+$("sw").innerHTML=SC.map(function(c,i){return '<button data-a="sc" data-v="'+i+'" style="background:'+c[0]+'" aria-label="'+c[1]+'"></button>'}).join("");
+var PB=["#e0412f","#f08a2c","#f2d23a","#6cc24a","#2fa7a0","#3a5fc8"];
+function adv(v){return v<5?"Very acidic. Most crops struggle. Lime and manure are needed.":v<5.5?"Strongly acidic. Add lime. Potatoes cope, maize and beans do poorly.":v<6?"Moderately acidic. A light liming helps maize and beans.":v<=7?"Ideal for most crops: maize, beans, vegetables and wheat.":v<=7.5?"Neutral to slightly alkaline. Fine for most crops. Watch iron and zinc.":v<=8.5?"Alkaline. Iron and zinc get locked up. Add compost or manure and choose tolerant crops.":"Strongly alkaline, possibly salty. Test for salts, improve drainage and consider gypsum."}
+function phShow(){var v=parseFloat($("phr").value);$("phd").innerHTML='<div class="row" style="border:0"><b style="font-size:20px">pH '+v.toFixed(1)+'</b><i style="width:26px;height:26px;border-radius:50%;background:'+PB[Math.min(5,Math.max(0,Math.round(v)-4))]+'"></i></div><div>'+adv(v)+'</div>'}
+$("phr").oninput=phShow;phShow();
+
+/* AI */
+async function initAI(){try{sample=window.claude?await window.claude.use("sample"):null}catch(e){sample=null}}
+function addMsg(w,t){var d=document.createElement("div");d.className="m "+w;d.textContent=t;$("log").appendChild(d);$("log").scrollTop=1e9;return d}
+function gu(q){return "https://www.google.com/search?q="+encodeURIComponent(q)}
+function ctx(){var P=D.pf||{},I=0,X=0;D.tx.forEach(function(t){t.t==="sale"?I+=t.a:X+=t.a});return "Reply ONLY in "+LN[lang]+", using simple everyday words. Weather: "+(wxSum()||"not loaded")+". Farmer first name: "+first()+". Farm location: "+(P.loc||"unknown")+". Farm type: "+(P.type||"unknown")+". Main crops or animals: "+(P.main||"unknown")+". Farm size: "+(P.size||"unknown")+". Today: "+today()+". Sales $"+I+", expenses $"+X+", profit $"+(I-X)+". Stock: "+(D.st.length?D.st.map(function(s){return s.n+" "+s.q+" "+s.u+(s.q<=s.l?" (LOW)":"")}).join(", "):"none")+". Open tasks: "+(D.tk.filter(function(k){return !k.done}).map(function(k){return k.t+" due "+k.d}).join(", ")||"none")}
+var lastSrc=[];var BASE="You are JARVIS, a brilliant, friendly assistant built into a farming app. Farming is your specialty (crops, livestock and poultry feeding and health, soil fertility, pests and diseases, irrigation, post-harvest handling, farm records, marketing and farm business), but you answer ANY question the farmer asks, on any topic, and you never say that you cannot help or that something is unavailable; if you lack current facts, say what is generally true and what to verify. Be warm and respectful and use the farmer's first name occasionally. Adapt advice to the farmer's location, season, farm type and the weather in the context; if the location is unknown, give general advice and ask where the farm is. Give the direct answer first, then short numbered practical steps with quantities, timings or ranges where you can, and state your assumptions. Use the farmer's own stock, task, weather and profit data when relevant. Safety: for pesticides and animal medicines, tell them to follow the product label, wear protective gear, respect withdrawal periods, and consult a local extension officer or vet for serious or uncertain cases. Never invent local prices, laws or brand-specific doses. Use web search when the question needs current facts such as prices, news, regulations or recent research, if a search tool is available. Write in plain simple words with no markdown symbols, under 180 words. After the answer, write a line exactly like 'Follow-ups: first question | second question | third question' with three short next questions the farmer might ask (in the reply language), then a final line 'Search: ' followed by a 3 to 6 word web search query in English.";
+function strip(x){return x.replace(/\n?\s*(Follow-ups|Search):[\s\S]*$/i,"").trim()}
+async function llm(turns,onText){
+  lastSrc=[];if(sample){var t=turns.slice();t[0]={role:"user",content:BASE+"\n\nContext: "+ctx()+"\n\nFarmer: "+t[0].content};var r=await sample(t,{cache:false,onText:onText});return r.text||""}
+  var res=await fetch("/.netlify/functions/ask",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({context:ctx(),messages:turns})});
+  if(!res.ok)throw new Error("ai");var j=await res.json();lastSrc=j.sources||[];return j.text||""}
+function addLink(q){var a=document.createElement("a");a.className="lnk";a.href=gu(q+" farming");a.target="_blank";a.rel="noopener noreferrer";a.textContent="Search the web: "+q;$("log").appendChild(a);$("log").scrollTop=1e9}
+async function ask(q){if(busy)return;addMsg("u",q);busy=true;$("orb").classList.add("think");
+  hist.push({role:"user",content:q});var turns=hist.slice(-8);while(turns.length&&turns[0].role!=="user")turns.shift();
+  var d=addMsg("j","Thinking...");
+  try{var t=await llm(turns,function(x){d.textContent=strip(x.text);$("log").scrollTop=1e9});
+    var fu=t.match(/Follow-ups:\s*(.+)/i),sm=t.match(/Search:\s*(.+)/i),b=strip(t);d.textContent=b;hist.push({role:"assistant",content:b});speak(b);addLink(sm?sm[1].trim():q);showSrc();
+    if(fu){$("qs").innerHTML=fu[1].split("|").slice(0,3).map(function(x){x=x.trim();return x?'<button data-a="q" data-v="'+esc(x)+'">'+esc(x)+'</button>':""}).join("")}
+  }catch(err){d.textContent=err&&err.code==="not_granted"?"I need your permission to answer. Please allow it and ask again.":offline(q);hist.pop();addLink(q)}
+  busy=false;$("orb").classList.remove("think")}
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)$("mic").classList.add("hidden");
+$("mic").onclick=function(){try{var r=new SR();r.lang="en-US";r.onresult=function(e){$("q").value=e.results[0][0].transcript;$("fAsk").requestSubmit()};r.start()}catch(e){}};
+
+/* events */
+document.addEventListener("click",function(e){var b=e.target.closest("[data-a]");if(!b)return;var a=b.dataset.a,v=b.dataset.v,s;
+  if(a==="tab")go(v);else if(a==="lg")setLang(v);else if(a==="q")ask(v);else if(a==="th")setTheme(v);
+  else if(a==="sc"){var c=SC[v];$("sd").innerHTML='<div class="row" style="border:0"><b>'+c[1]+'</b></div><div>'+c[2]+'</div>';document.querySelectorAll("#sw button").forEach(function(x){x.classList.toggle("on",x===b)})}
+  else if(a==="xd"){D.tx=D.tx.filter(function(t){return t.id!==v});save();renderAll()}
+  else if(a==="sd"){if(confirm("Delete this stock item?")){D.st=D.st.filter(function(t){return t.id!==v});save();renderAll()}}
+  else if(a==="sm"||a==="sp"){s=D.st.find(function(t){return t.id===v});if(s){s.q=Math.max(0,+(s.q+(a==="sp"?1:-1)).toFixed(3));save();renderAll()}}
+  else if(a==="kd"){D.tk=D.tk.filter(function(t){return t.id!==v});save();renderAll()}});
+document.addEventListener("change",function(e){var t=e.target;
+  if(t.dataset.qty){var s=D.st.find(function(x){return x.id===t.dataset.qty});if(s){s.q=Math.max(0,parseFloat(t.value)||0);save();renderAll()}}
+  if(t.dataset.tg){var k=D.tk.find(function(x){return x.id===t.dataset.tg});if(k){k.done=t.checked;save();renderAll()}}});
+$("fAsk").onsubmit=function(e){e.preventDefault();var q=$("q").value.trim();if(q){$("q").value="";ask(q)}};
+$("fTx").onsubmit=function(e){e.preventDefault();D.tx.push({id:uid(),t:$("txT").value,a:parseFloat($("txA").value)||0,c:$("txC").value.trim(),n:$("txN").value.trim(),d:today()});save();$("fTx").reset();renderAll()};
+$("fSt").onsubmit=function(e){e.preventDefault();D.st.push({id:uid(),n:$("stN").value.trim(),c:$("stC").value,u:$("stU").value.trim(),q:parseFloat($("stQ").value)||0,l:parseFloat($("stL").value)||0});save();$("fSt").reset();renderAll()};
+$("fTk").onsubmit=function(e){e.preventDefault();D.tk.push({id:uid(),t:$("tkT").value.trim(),d:$("tkD").value,done:false});save();$("fTk").reset();renderAll()};
+$("fSe").onsubmit=function(e){e.preventDefault();var q=$("sq").value.trim(),E=encodeURIComponent,L=[["Google",gu(q)],["YouTube how-to videos","https://www.youtube.com/results?search_query="+E(q+" farming")],["Google Scholar research","https://scholar.google.com/scholar?q="+E(q)],["FAO guides",gu(q+" site:fao.org")],["CGIAR research",gu(q+" site:cgiar.org")],["Extension guides (PDF)",gu(q+" extension guide filetype:pdf")]];
+  $("srcs").innerHTML=L.map(function(x){return '<a class="lnk" href="'+x[1]+'" target="_blank" rel="noopener noreferrer">'+esc(x[0])+'</a>'}).join("")};
+$("voice").onclick=function(){voiceOn=!voiceOn;if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel();$("voice").textContent="Voice: "+(voiceOn?"on":"off");$("voice").setAttribute("aria-pressed",voiceOn);applyLang()};
+$("out").onclick=function(){ls("jv:session","");if(window.speechSynthesis)speechSynthesis.cancel();me=null;$("hud").classList.add("hidden");$("nav").classList.add("hidden");$("auth").classList.remove("hidden")};
+
+$("fPf").onsubmit=function(e){e.preventDefault();D.pf={loc:$("pfL").value.trim(),type:$("pfT").value,main:$("pfM").value.trim(),size:$("pfS").value.trim()};save();$("pfOk").textContent="Saved. Jarvis will use this to give you better advice."};
+
+/* ===== FINAL FEATURES ===== */
+var LN={en:"English",sn:"Shona",nd:"Ndebele (isiNdebele of Zimbabwe)"},lang=ls("jv:lang")||"en";
+var CH={en:["What should I plant this month?","How do I control pests naturally?","How much feed do my chickens need?","How do I fix acidic soil?"],sn:["Ndinodyara chii mwedzi uno?","Ndinodzivirira sei tupukanana zvakasikwa?","Huku dzangu dzinoda chikafu chakadini?","Ndinogadzirisa sei ivhu rine acid?"],nd:["Ngifanele ngihlanyele ini kule nyanga?","Ngilawula njani izinambuzane ngendlela yemvelo?","Inkukhu zami zidinga ukudla okungakanani?","Ngilulama njani inhlabathi ene-asidi?"]};
+var R=[["Weather","Mamiriro ekunze","Isimo sezulu"],["Money","Mari","Imali"],["Stock","Zvakachengetwa","Isitoko"],["Soil","Ivhu","Inhlabathi"],["Tasks","Mabasa","Imisebenzi"],["More","Zvimwe","Okunye"],
+["Log in","Pinda","Ngena"],["Create account","Vhura account","Vula i-akhawunti"],["Username","Zita rekushandisa","Ibizo lomsebenzisi"],["Password","Pasiwedhi","Iphasiwedi"],["Your name","Zita rako","Ibizo lakho"],["New farmer? Create account","Murimi mutsva? Vhura account","Umlimi omusha? Vula i-akhawunti"],["Have an account? Log in","Une account here? Pinda","Ulayo i-akhawunti? Ngena"],["Your smart farm assistant. Please identify yourself.","Mubatsiri wako wepaurimi. Ndapota pindai.","Umsizi wakho wepolimo. Sicela ungene."],["Accounts are saved on this device only. Do not reuse an important password.","Maaccount anochengetwa pafoni iyi chete. Usashandise pasiwedhi yako inokosha.","Ama-akhawunti agcinwa kule foni kuphela. Ungasebenzisi iphasiwedi ebalulekileyo."],["Log out","Buda","Phuma"],
+["Profit","Purofiti","Inzuzo"],["Low stock","Zviri kupera","Okuphelayo"],["Tasks due","Mabasa anofanira","Imisebenzi efanele"],["Thought for today","Mazano emusi uno","Umcabango wanamuhla"],["Send","Tuma","Thumela"],["Ask about crops, pests, feed, soil...","Bvunza nezvezvirimwa, tupukanana, chikafu, ivhu...","Buza ngezilimo, izinambuzane, ukudla, inhlabathi..."],
+["Record sale or expense","Nyora kutengesa kana mari yakashandiswa","Bhala ukuthengisa noma inkcitho"],["Type","Mhando","Uhlobo"],["Sale","Kutengesa","Ukuthengisa"],["Expense","Mari yakashandiswa","Inkcitho"],["Amount ($)","Mari ($)","Inani ($)"],["Crop / product","Chirimwa / chigadzirwa","Isilimo / umkhiqizo"],["Note","Nyorera","Inothi"],["Save entry","Chengeta","Gcina"],["Recent entries","Zvakanyorwa nguva pfupi yapfuura","Okubhaliwe kamuva"],["Total profit","Purofiti yose","Inzuzo yonke"],
+["Add stock item","Wedzera chinhu mu stock","Engeza into esitokweni"],["Item","Chinhu","Into"],["Category","Mhando yechinhu","Isigaba"],["Unit","Yuniti","Iyunithi"],["Quantity now","Huwandu ikozvino","Inani manje"],["Warn me at or below","Nditsvagirei kana yasvika pa","Ngixwayise uma kufika ku"],["Add to stock","Wedzera","Engeza"],["Stock on hand","Zviripo","Okukhona esitokweni"],
+["Soil colour guide","Gwara remavara eivhu","Umhlahlandlela wemibala yenhlabathi"],["Tap a colour that looks like your soil.","Dzvanya ruvara rwakafanana neivhu rako.","Thinta umbala ofana lenhlabathi yakho."],["pH scale","pH scale","Isikali se-pH"],["Move the slider to your test result.","Fambisa slider kusvika pamhedzisiro yako.","Hambisa i-slider ufike emiphumeleni yakho."],["Soil type: feel test","Mhando yeivhu: bvunzo yekubata","Uhlobo lwenhlabathi: ukuhlola ngokuthinta"],
+["New reminder","Chiyeuchidzo chitsva","Isikhumbuzo esisha"],["Task","Basa","Umsebenzi"],["Due date","Zuva rekupedzisa","Usuku lokuphela"],["Add reminder","Wedzera chiyeuchidzo","Engeza isikhumbuzo"],["Reminders","Zvinyeuchidzo","Izikhumbuzo"],
+["Search the web","Tsvaga paintaneti","Sesha ku-inthanethi"],["Find information","Tsvaga ruzivo","Sesha ulwazi"],["Ask Jarvis","Bvunza Jarvis","Buza uJarvis"],["Colour theme","Ruvara rweapp","Umbala we-app"],["Install on your phone","Isa pafoni yako","Faka efonini yakho"],["Install app","Isa app","Faka i-app"],["Language","Mutauro","Ulimi"],
+["Farm profile for Jarvis","Mashoko epafamu yako kuna Jarvis","Ulwazi lwepulazi lakho luka-Jarvis"],["Where is your farm?","Famu yako iri kupi?","Ipulazi lakho lisephi?"],["Farm type","Mhando yefamu","Uhlobo lwepulazi"],["Farm size","Hukuru hwefamu","Usayizi wepulazi"],["Main crops or animals","Zvirimwa kana zvipfuyo zvikuru","Izilimo noma izifuyo eziyinhloko"],["Save profile","Chengeta","Gcina"],
+["Weather forecast","Mamiriro ekunze","Isimo sezulu"],["Check weather","Tarisa mamiriro ekunze","Hlola isimo sezulu"],["Use my location","Shandisa nzvimbo yangu","Sebenzisa indawo yami"],["Town or village","Taundi kana musha","Idolobha noma umuzi"],["Farm advice from the weather","Mazano ekurima kubva kumamiriro ekunze","Izeluleko zokulima ngokwesimo sezulu"],["7-day forecast","Mamiriro ekunze emazuva 7","Isimo sezulu sezinsuku eziyi-7"],["Open a weather website","Vhura webhusaiti yemamiriro ekunze","Vula iwebhusayithi yesimo sezulu"],
+["Clear","Kwakachena","Kuhle"],["Partly cloudy","Makore zvishoma","Amayezi amanye"],["Fog","Mhute","Inkungu"],["Drizzle","Munyunyu","Isithibi"],["Rain","Mvura","Imvula"],["Showers","Mvura yezvikamu","Imvula yezikhathi"],["Thunderstorm","Dutu rekutinhira","Isiphepho sezulu"],
+["Strong wind: do not spray chemicals today.","Mhepo yakasimba: usanyunyire mishonga nhasi.","Umoya onamandla: ungafafazi amakhemikhali lamuhla."],["Rain is likely soon: delay spraying and fertilizer, and prepare for planting.","Mvura inogona kunaya nekukurumidza: tambanudza kunyunyira nefetireza, gadzirira kudyara.","Imvula ingaqala masinyane: libalise ukufafaza lomanyolo, lilungiselele ukuhlanyela."],["Very hot today: water crops early and give animals shade and extra water.","Kwakapisa kwazvo nhasi: dilira zvirimwa mangwanani uye ipa zvipfuyo mumvuri nemvura yakawanda.","Kuyatshisa kakhulu lamuhla: nisela izilimo ekuseni unike izifuyo umthunzi lamanzi amanengi."],["A dry week is ahead: irrigate and mulch to save moisture.","Vhiki rakaoma ririkuuya: dilira uye isa mulch kuchengeta mvura.","Isonto elomileyo liyeza: nisela ugcwalise i-mulch ukulondoloza umswakama."],["Cold night: protect seedlings and young animals from frost.","Husiku hwechando: dzivirira mbeu dzichangobuda nezvipfuyo zvidiki kubva kuchando.","Ubusuku obubandayo: vikela izithombo lezifuyo ezincane eqhweni."],["Conditions look good for field work.","Mamiriro akanaka pakushanda mumunda.","Isimo sihle sokusebenza insimini."],
+["Online","Une internet","Ku-inthanethi"],["Offline","Hapana internet","Akukho inthanethi"],["Voice: on","Izwi: rakavhurwa","Izwi: livuliwe"],["Voice: off","Izwi: rakavharwa","Izwi: livaliwe"],["Export backup","Bvisa backup","Khipha i-backup"],["Import backup","Isa backup","Faka i-backup"],["Print report","Printa report","Phrinta umbiko"],["Your data","Data yako","Idatha yakho"],["About","Nezve app iyi","Mayelana le-app"]];
+var TR={sn:{},nd:{}};R.forEach(function(r){TR.sn[r[0]]=r[1];TR.nd[r[0]]=r[2]});
+function applyLang(){var d=TR[lang]||{},w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),n,L=[];while((n=w.nextNode()))L.push(n);
+  L.forEach(function(n){var p=n.parentNode;if(!p||p.nodeType!==1||/SCRIPT|STYLE/.test(p.nodeName)||p.closest("#log,#qs,#greet,#quote"))return;if(n.__o===undefined)n.__o=n.nodeValue;var k=n.__o.trim(),t=d[k];n.nodeValue=t?n.__o.replace(k,t):n.__o});
+  document.querySelectorAll("[placeholder]").forEach(function(e){if(e.__ph===undefined)e.__ph=e.placeholder;e.placeholder=d[e.__ph]||e.__ph});
+  document.documentElement.lang=lang==="en"?"en":lang}
+function setLang(l){lang=l;ls("jv:lang",l);var h=[["en","English"],["sn","Shona"],["nd","Ndebele"]].map(function(x){return '<button data-a="lg" data-v="'+x[0]+'" class="'+(x[0]===l?'on':'')+'" aria-pressed="'+(x[0]===l)+'">'+x[1]+'</button>'}).join("");
+  document.querySelectorAll(".lgs").forEach(function(e){e.innerHTML=h});
+  if(!me)$("qs").innerHTML="";else $("qs").innerHTML=CH[l].map(function(x){return '<button data-a="q" data-v="'+esc(x)+'">'+esc(x)+'</button>'}).join("");
+  applyLang()}
+function greetMsg(){var h=new Date().getHours(),i=h<12?0:h<18?1:2,a=alerts(),n=first(),has=a.lo||a.due;
+  if(lang==="sn")return ["Mangwanani","Masikati","Manheru"][i]+", "+n+". "+(has?"Une zvinhu "+a.lo+" zviri kupera uye mabasa "+a.due+" anofanira. ":"Zvese zviri kufamba zvakanaka. ")+"Ndeupi chirimwa chauri kushanda nacho nhasi?";
+  if(lang==="nd")return ["Livukile","Salibonani","Litshonile"][i]+", "+n+". "+(has?"Ulezinto ezingu-"+a.lo+" eziphelayo lemisebenzi engu-"+a.due+" efanele. ":"Konke kuhamba kuhle. ")+"Yisiphi isilimo osebenza ngaso lamuhla?";
+  return ["Good morning","Good afternoon","Good evening"][i]+", "+n+". "+(has?"You have "+(a.lo?a.lo+" low stock item"+(a.lo>1?"s":""):"")+(a.lo&&a.due?" and ":"")+(a.due?a.due+" task"+(a.due>1?"s":"")+" due":"")+". ":"Everything looks in order. ")+"Which crop are you working on today?"}
+function intro(){return lang==="sn"?"Ndini Jarvis. Bvunza chero chipi zvacho nezvekurima, zvipfuyo, chikafu, ivhu, mvura kana mitengo, kana chimwe chinhu chose. Ndinogona kutsvaga paintaneti ndikuratidze mawebhusaiti.":lang==="nd"?"NginguJarvis. Buza noma yini ngokulima, izifuyo, ukudla, inhlabathi, amanzi lamanani, loba yini enye. Ngingasesha ku-inthanethi ngikukhombise amawebhusayithi.":"I am Jarvis. Ask me anything about farming or anything else. I can search the web for current information and show you the sources."}
+function net(){$("net").textContent=navigator.onLine?"Online":"Offline";applyLang()}
+window.addEventListener("online",function(){if(me)net()});window.addEventListener("offline",function(){if(me)net()});
+
+/* offline knowledge so Jarvis always answers */
+var KB=[[/pest|armyworm|aphid|insect|worm|bug/,"Scout your field twice a week in the early morning. For armyworm look for ragged leaves and droppings in the funnel. Hand-pick, or use wood ash or neem extract for light attacks. Use a registered pesticide only when damage is spreading, and follow the label and wear protective clothing."],
+[/soil|ph\b|acid|lime|fertili|manure|compost/,"Test your soil pH first. Below 5.5, add agricultural lime and manure. Mix compost or manure into the topsoil each season, rotate crops with legumes such as beans or groundnuts, and keep soil covered with mulch."],
+[/maize|corn|sorghum|millet/,"Plant maize with the first good rains, about 75 cm between rows and 25 cm between plants. Apply basal fertilizer at planting and top dressing 4 to 6 weeks later. Weed within the first 3 weeks."],
+[/chicken|poultry|layer|broiler|hen/,"Feed broilers starter feed first and finisher later. Layers need layer mash with calcium from about 18 weeks. Always give clean fresh water, keep litter dry, and follow your vaccination schedule with a vet."],
+[/goat|cattle|cow|livestock|animal|dip|tick|sheep|pig/,"Keep animals dewormed, dipped and vaccinated on a schedule from your vet. Give clean water, minerals, and enough dry-season feed such as hay or silage."],
+[/water|irrigat|drought|dry|rain/,"Water early morning or evening, mulch to hold moisture, and use drip lines where you can. Water deeply but less often so roots grow down."],
+[/price|market|sell|profit|money|cost/,"Record your costs per crop, add a profit margin, and compare prices at two or three markets before selling. Store grain dry to sell when prices rise, and sell together with other farmers for better bargaining."]];
+function offline(q){var l=q.toLowerCase();for(var i=0;i<KB.length;i++)if(KB[i][0].test(l))return KB[i][1]+" Tell me your crop and location and I will be more specific.";return "Here is how I would approach it: break the problem into soil, water, pests and money, and check each one. Tell me your crop and location and I will be more specific. The search link below has guides and videos on this topic."}
+function showSrc(){lastSrc.slice(0,4).forEach(function(x){if(!x||!/^https?:/.test(x.url))return;var a=document.createElement("a");a.className="lnk";a.href=x.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Source: "+(x.title||x.url);$("log").appendChild(a)});$("log").scrollTop=1e9}
+$("askJ").onclick=function(){var q=$("sq").value.trim();if(!q){$("sq").focus();return}go("ask");ask(q)};
+
+/* weather (Open-Meteo, free, no key) */
+var WX={};try{WX=JSON.parse(ls("jv:wx")||"{}")}catch(e){}
+function WC(c){return c===0?"Clear":c<=3?"Partly cloudy":c<=48?"Fog":c<=57?"Drizzle":c<=67?"Rain":c<=77?"Rain":c<=82?"Showers":"Thunderstorm"}
+function wxSum(){var d=WX.d;if(!d)return "";var t=0;d.daily.precipitation_sum.forEach(function(x){t+=x||0});return WX.n+": now "+Math.round(d.current.temperature_2m)+"C, "+WC(d.current.weather_code)+", wind "+Math.round(d.current.wind_speed_10m)+" km/h. Next 7 days: total rain "+Math.round(t)+" mm, highest "+Math.round(Math.max.apply(null,d.daily.temperature_2m_max))+"C, lowest "+Math.round(Math.min.apply(null,d.daily.temperature_2m_min))+"C"}
+var NETMSG="I could not reach the weather service. Inside Claude's preview weather is blocked, so open the hosted web app. Otherwise check your internet and try again.";
+function tmo(ms){var c=new AbortController();setTimeout(function(){c.abort()},ms);return c.signal}
+async function jget(u){var r=await fetch(u,{signal:tmo(12000)});if(!r.ok)throw new Error("http "+r.status);return r.json()}
+function fu(la,lo){return "https://api.open-meteo.com/v1/forecast?latitude="+la+"&longitude="+lo+"&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=auto&forecast_days=7"}
+var NETOK=false;
+async function geo(q){NETOK=false;var names=[q,q.split(",")[0].trim()].filter(function(x,i,a){return x&&a.indexOf(x)===i});
+  for(var i=0;i<names.length;i++){try{var j=await jget("https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name="+encodeURIComponent(names[i]));NETOK=true;if(j.results&&j.results.length){var p=j.results[0];return{la:p.latitude,lo:p.longitude,n:p.name+(p.country?", "+p.country:"")}}}catch(e){}}
+  try{var k=await jget("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(q));NETOK=true;if(k.length)return{la:+k[0].lat,lo:+k[0].lon,n:k[0].display_name.split(",").slice(0,2).join(",")}}catch(e){}
+  return null}
+async function wxFetch(la,lo,name){var j;try{j=await jget(fu(la,lo))}catch(e){j=await jget("/.netlify/functions/weather?lat="+la+"&lon="+lo)}
+  if(!j||!j.current)throw new Error("wx");WX={n:name,t:Date.now(),d:j};ls("jv:wx",JSON.stringify(WX));rWx()}
+async function wxLoad(q){rWx("Looking up "+q+"...");
+  try{var g=await geo(q);if(g){await wxFetch(g.la,g.lo,g.n);return}
+    if(NETOK){rWx("I could not find that place. Try the nearest bigger town, or add the country, for example Chinhoyi, Zimbabwe.");return}
+    var p=await jget("/.netlify/functions/weather?q="+encodeURIComponent(q));if(!p||!p.forecast)throw new Error("wx");WX={n:p.name,t:Date.now(),d:p.forecast};ls("jv:wx",JSON.stringify(WX));rWx()}
+  catch(e){rWx(WX.d?"Showing your last saved forecast. The live forecast could not be reached.":NETMSG)}}
+function rWx(note){var d=WX.d,h=note?'<div class="bx">'+esc(note)+'</div>':"";
+  if(!d){h+='<a class="lnk" href="'+gu("weather forecast "+$("wxQ").value)+'" target="_blank" rel="noopener noreferrer">Open a weather website</a>';$("wxOut").innerHTML=h;applyLang();return}
+  var c=d.current,y=d.daily,adv=[],tot=0;y.precipitation_sum.forEach(function(x){tot+=x||0});
+  if(c.wind_speed_10m>=25)adv.push("Strong wind: do not spray chemicals today.");
+  if(y.precipitation_probability_max[0]>=60||y.precipitation_probability_max[1]>=60||y.precipitation_sum[0]>=5)adv.push("Rain is likely soon: delay spraying and fertilizer, and prepare for planting.");
+  if(y.temperature_2m_max[0]>=35)adv.push("Very hot today: water crops early and give animals shade and extra water.");
+  if(tot<5)adv.push("A dry week is ahead: irrigate and mulch to save moisture.");
+  if(y.temperature_2m_min[0]<=5)adv.push("Cold night: protect seedlings and young animals from frost.");
+  if(!adv.length)adv.push("Conditions look good for field work.");
+  h+='<div class="bx"><div class="mu">'+esc(WX.n)+'</div><div style="display:flex;align-items:center;gap:14px"><b style="font-size:44px">'+Math.round(c.temperature_2m)+'&deg;C</b><div><div>'+WC(c.weather_code)+'</div><div class="mu">'+c.relative_humidity_2m+'% &middot; '+Math.round(c.wind_speed_10m)+' km/h</div></div></div></div>';
+  h+='<div class="bx"><h2>Farm advice from the weather</h2>'+adv.map(function(a){return '<div class="row"><span>'+a+'</span></div>'}).join("")+'</div>';
+  h+='<div class="bx"><h2>7-day forecast</h2>'+y.time.map(function(t,i){return '<div class="row"><span><b>'+new Date(t+"T00:00").toLocaleDateString(undefined,{weekday:"short",day:"numeric"})+'</b><br><span class="mu">'+WC(y.weather_code[i])+'</span></span><span style="text-align:right">'+Math.round(y.temperature_2m_max[i])+'&deg; / '+Math.round(y.temperature_2m_min[i])+'&deg;<br><span class="mu">'+(y.precipitation_sum[i]||0)+' mm &middot; '+(y.precipitation_probability_max[i]||0)+'%</span></span></div>'}).join("")+'</div>';
+  $("wxOut").innerHTML=h;applyLang()}
+function wxOpen(){if(!$("wxQ").value)$("wxQ").value=(D.pf&&D.pf.loc)||WX.n||"";rWx()}
+function wxBoot(){$("wxQ").value=(D.pf&&D.pf.loc)||WX.n||"";if(WX.d)rWx();if(D.pf&&D.pf.loc&&navigator.onLine)wxLoad(D.pf.loc)}
+$("fWx").onsubmit=function(e){e.preventDefault();var q=$("wxQ").value.trim();if(q)wxLoad(q)};
+$("wxGeo").onclick=function(){if(!navigator.geolocation){rWx("Type your town name instead.");return}navigator.geolocation.getCurrentPosition(function(p){wxFetch(p.coords.latitude,p.coords.longitude,"My location").catch(function(){rWx(WX.d?"Showing your last saved forecast. The live forecast could not be reached.":NETMSG)})},function(){rWx("Location permission was not given. Type your town name instead.")},{timeout:10000})};
+
+/* data tools */
+$("bkE").onclick=function(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(D)],{type:"application/json"}));a.download="farm-jarvis-backup-"+today()+".json";document.body.appendChild(a);a.click();a.remove()};
+$("bkI").onclick=function(){$("bkF").click()};
+$("bkF").onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var j=JSON.parse(r.result);D={tx:j.tx||[],st:j.st||[],tk:j.tk||[],pf:j.pf||{}};save();renderAll();$("bkMsg").textContent="Backup restored."}catch(x){$("bkMsg").textContent="That file could not be read."}};r.readAsText(f)};
+$("pr").onclick=function(){go("money");setTimeout(function(){window.print()},250)};
+setLang(lang);
+
+/* install */
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;$("instBtn").classList.remove("hidden")});
+$("instBtn").onclick=function(){if(dp){dp.prompt();dp=null;$("instBtn").classList.add("hidden")}};
+if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+
+var s=ls("jv:session");if(s&&users[s])enter(s);
+})();
+</script>
+</body>
+</html>
